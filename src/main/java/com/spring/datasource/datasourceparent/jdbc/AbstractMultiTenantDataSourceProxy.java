@@ -25,13 +25,44 @@ public abstract class AbstractMultiTenantDataSourceProxy extends LazyConnectionD
     @Autowired(required = false)
     private TenantAware tenantAware;
 
+    public TenantAware getTenantAware() {
+        return tenantAware;
+    }
+
+    public void setTenantAware(TenantAware tenantAware) {
+        this.tenantAware = tenantAware;
+    }
+
     @Override
     public Connection getConnection() throws SQLException {
-        return super.getConnection();
+        String tenant=tenant();
+        Connection connection=targetDataSource().getConnection();
+        return tryBindTenant(connection,tenant);
     }
 
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
-        return super.getConnection(username, password);
+        String tenant=tenant();
+        Connection connection=targetDataSource().getConnection(username,password);
+        return tryBindTenant(connection,tenant);
     }
+
+
+    protected String tenant(){
+        if(tenantAware!=null){
+            return tenantAware.currentTenant();
+        }
+        return null;
+    }
+    protected Connection tryBindTenant(Connection connection,String tenant) throws SQLException{
+        try {
+          return  bindTenant(connection,tenant);
+        }catch (Throwable throwable){
+            connection.close();
+            throw throwable;
+        }
+    }
+
+    protected abstract Connection bindTenant(Connection connection, String tenant) throws SQLException;
+    protected DataSource targetDataSource(){return super.getTargetDataSource();}
 }

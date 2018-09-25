@@ -23,14 +23,15 @@ public class Interceptor extends HandlerInterceptorAdapter {
         String code=request.getParameter("code");
 
         if (StringUtils.isEmpty(code)){
-            throw new Exception("参数异常");
+            throw new RuntimeException("CODE参数未填");
         }
+        SessionUtils.setTenantId(code);
 
         return true;
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        super.afterCompletion(request, response, handler, ex);
+        SessionUtils.removeTenantId();
     }
 }

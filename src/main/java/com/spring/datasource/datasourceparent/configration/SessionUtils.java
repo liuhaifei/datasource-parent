@@ -15,7 +15,7 @@ public class SessionUtils {
     private static final String TENANT_ID="TENANT_ID";
 
 
-    public static void setThreadLocalTenantId(String key){
+    public static void setTenantId(String key){
         ThreadLocalUtil.set(TENANT_ID,DB_PREFIX+key);
     }
 

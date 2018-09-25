@@ -1,6 +1,8 @@
 package com.spring.datasource.datasourceparent.configration;
 
+import com.spring.datasource.datasourceparent.jdbc.SimpleMultiTenantDataSourceProxy;
 import com.spring.datasource.datasourceparent.jdbc.TenantAware;
+import com.spring.datasource.datasourceparent.util.MultiTenantStrategy;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -25,7 +27,7 @@ public class JdbcConfiguration {
     public DataSource dataSource(DataSourceProperties properties){
 
         DataSource dataSource=properties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
-        return new SimpleDriverDataSource();
+        return new SimpleMultiTenantDataSourceProxy(dataSource, MultiTenantStrategy.CATALOG);
     }
 
 
